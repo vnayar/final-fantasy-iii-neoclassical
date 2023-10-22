@@ -30,7 +30,7 @@ Rename the patch file included in this project according to the ROM file you hav
 ## Change Summary
 
 The full details of all changes made can be found in:
-[neoclassical-patch-notes.org](./neoclassical-patch-notes.org).
+[neoclassical-patch-notes.org](https://github.com/vnayar/final-fantasy-iii-neoclassical/blob/master/neoclassical-patch-notes.org).
 
 The original game's mechanics are well described at: https://gamefaqs.gamespot.com/pc/793808-final-fantasy-iii/faqs/29389
 
@@ -394,6 +394,7 @@ Equipment Changes:
 Command Changes:
 - Fight: Right-hand weapon now receives str/2 instead of str/4 damage.
 - Steal: Success chance changed from (level+skill)/255 % to (level+skill)/200 %.
+  - Enemies found in the crystal tower carry valuable items.
 - Escape: Defense/Evasion no longer set to 0.
 - Item: Int contributes more strongly to offensive items, e.g. NorthWind. Spi now contributes to
   potions.

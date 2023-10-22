@@ -1045,7 +1045,7 @@ Once a solution to the above is found, increase the number of charges in Wall fr
 31/B49A: 60        RTS
 #+END_SRC
 
-*** Improve Steal Rate
+*** Improve Steal
 
 The current steal rate is: StealChance = (level + skill) / 255
 
@@ -1068,6 +1068,67 @@ Offset: $06abda
   35/ABD3: 4C B7 AB  JMP $ABB7
   35/ABD6: A0 01     LDY #$01
 #+END_SRC
+
+The loot that one gets from stealing is quite terrible. Add a few methods to get access to hard to
+get offensive items.
+
+Great list of enemies: http://www.finalfantasykingdom.net/finalfantasyiiibestiary2.php
+
+Enemy Data: Offset: $60010
+- $0: Level
+- $1-2: HP
+- $3: Special attack rate
+- $4: Skill
+- $5: Elemental weaknesses
+- $6: Magic evade index
+- $8: Attack element
+- $9: Attack/Hit/Multiplier index
+- $A: Status applied on hit.
+- $B: Elemental resistances.
+- $C: Defense/Evade Index
+- $D: Status resistances
+- $E: Special attack index
+- $F: Steal/Drop index
+
+
+- $609e0 Ion - Source of "Earthdrum", Group 36
+Old: 35b0 041e 0000 0e44 0080 0000 1f00 0400
+New:                                      36
+- $60b80 Flame Devil - Source of "God's Wine", Group 34
+Old: 3e22 065a 3508 11dd 108c 0010 3021 0000
+New:                                      34
+- $60b90 QumQum - Source of "ChocoRage", Group 35
+Old: 3e22 065a 3508 11dd 108c 0010 3021 0000
+New:                                      35
+- $60630 Magician - Existing source of TurtleShell, group 2B.
+- $60ab0 Thanatos - Add to group 2B
+Old: 3998 0815 2000 10b8 0086 0000 2200 2b00
+New:                                      2B
+- $60c20 Jormungand - Add to group 2B
+Old: 410a 0a1e 1000 1200 0091 0000 3100 2600
+New:                                      2B
+- $60ae0 Dorga.Cln. - Source of "Fenix Down", Group 37
+Old: 2edc 0563 2500 9d75 0080 00fe 2f20 1500
+New:                                      37
+- $60180 Unne Cln. - Source of "Fenix Down", Group 37
+Old: 1edc 0563 2000 9d57 0080 00fe 2f20 1600
+Old:                                      37
+
+Steal/Drop Indexes
+- Group 34: Offset:$21C30-$21C33
+  Old: 00 00 00 00
+  New: A7 A7 B9 B9 - High Potion (A7), God's Wine (B9)
+- Group 35: Offset:$21C38-$21C3B
+  Old: 00 00 00 00
+  New: A7 A7 C6 C6 - High Potion (A7), ChocoRage (C6)
+- Group 36: Offset:$21C40-$21C43
+  Old: 00 00 00 00
+  New: A7 A7 B7 B7 - High Potion (A7), Earthdrum (B7)
+- Group 37: Offset:$21C48-$21C4B
+  Old: 00 00 00 00
+  New: A7 A7 A9 A9 - High Potion (A7), Fenixdown (A9)
+
+Success!
 
 *** Some Geomancer Spells Poorly Balanced
 
