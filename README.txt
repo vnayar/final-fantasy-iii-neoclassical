@@ -880,12 +880,14 @@ following ways:
   get access to them).
 - Lower level spells, such as Fire and Cure are not as powerful, but useful even in the late game.
 - Erase has been modifed to almost as impactful to spellcasters as Haste is to melee characters:
-  - The color of the spell has been changed to indicate it is NOT related to Wall. Erase removes
-    elemental resistances that halve incoming magic damage, it is not involved in spell reflection.
   - Some monsters has universal elemental resistance, halving damage, no matter what. This has been removed.
   - Erase can remove elemental resistance from bosses, as long as you land at least 4 hits.
-- The Bard is now a powerful ally of spellcasters, because he is the only job capable of lowering
-  enemy magic defense, even against bosses.
+  - The color of the spell has been changed to indicate it is NOT related to Wall. Erase removes
+    elemental resistances that halve incoming magic damage, it is not involved in spell reflection.
+- Wall has been given a brighter grey color, making it visually distinct from Erase to avoid confusion.
 - Cure4 no longer heals HP to max (the bytes were needed to add spi/2 to healing). However, in
   compensation, it has more spellpower than before. It is slightly weaker on a single target, but
   more powerful when used on the entire party.
+- Drain now works on bosses, giving Black Mages a powerful spell they can use.
+- The Bard is now a powerful ally of spellcasters, because he is the only job capable of lowering
+  enemy magic defense, even against bosses.

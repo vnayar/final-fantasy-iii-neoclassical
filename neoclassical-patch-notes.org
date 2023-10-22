@@ -749,6 +749,29 @@ These bosses, who already have extreme difficulty, should be rebalanced accordin
 
 Result: Success!
 
+**** Give Black Mage Boss-Capable Spells
+
+Problem: Black Mages (not Magus) have no effective spells to use against bosses. Their damage
+becomes very minimal, because they lack access to Flare and Meteo.
+
+Solution: Permit Drain to work against bosses, giving them better survivability and a key damage source.
+
+#+BEGIN_SRC
+; "ドレイン" / "Drain"
+; Offset: $632c5
+31/B2B5: 20 E7 B8  JSR $B8E7          ; apply m.evade
+31/B2B8: F0 0A     BEQ $B2C4          ; branch if no hit
+31/B2BA: 20 25 BC  JSR $BC25          ; get target flags
+31/B2BD: 10 08     BPL $B2C7
+31/B2BF: AD D8 7E  LDA $7ED8
+31/B2C2: 10 03     BPL $B2C7          ; branch if not a boss battle
+- 31/B2C4: 4C 26 B9  JMP $B926          ; attack ineffective
++ 31/B2C4: EA EA EA  NOP NOP NOP        ; attack not ineffective
+31/B2C7: 20 B5 A2  JSR $A2B5          ; get attacker flags
+31/B2CA: 29 87     AND #$87
+31/B2CC: 85 28     STA $28
+#+END_SRC
+
 **** Fix Erase Spell (Working as Intended)
 
 No clue what erase does, is it broken?
@@ -879,6 +902,10 @@ Try: 18-23: Yes, covers erase.
 Try: 18-20: Does not cover cure3. Does not cover erase.
 Try: 23: Success! Change palette from B1 => F5. Looks great! Blueish/Pinkish
 
+**** Make Wall Spell Actually Useful
+
+First let's give it a better color than dirty grey...
+
 Try: 7-12: Covers all Level 7 Black and White
 Try: 10-12: Covers all Level 7 White
 Try: 12: Covers Wall
@@ -897,6 +924,80 @@ Try: 12: Covers Wall
   - 99: Dark grey with light cyan highlight
   - 88: Dark green with white highlight and black shade
   - 77: Deep blue with light blue highlight -- A keeper!
+  - Libra is bright white, what does it use? Slot 31 - BA
+  - BA: Grey with white highlight. Looks good, neutral, very different from erase.
+
+Order apppears to be:
+- Flare  Death  Meteo  WWind  Life 2  Holy   ???
+- Quake  Brak2  Drain  Cure4  Heal    Wall   ???
+- Fire3  Bio    Warp   Aero2  Soft    Haste  ???
+- Bolt3  Kill   Erase  Cure3  Life1   Safe   ???
+- Break  Ice 3  Shade  Libra  Confu   Mute   ???
+
+Now, back to business.
+
+Reflect is used during the normal magic effect (only usage):
+#+BEGIN_SRC
+; [ attack effect $00: normal magic damage ]
+
+31/B17C: A0 26     LDY #$26           ; Note, the reflect counter offset #$26 is in Y.
+31/B17E: B1 70     LDA ($70),Y        ; Note, the reflect counter is in A.
+31/B180: F0 03     BEQ $B185          ; branch if target doesn't have reflect
+31/B182: 20 FA B9  JSR $B9FA          ; do reflect effect  <-- Can save bytes using Y and A.
+31/B185: 20 8F B8  JSR $B88F          ; apply elemental modifiers
+31/B188: 20 E7 B8  JSR $B8E7          ; apply m.evade
+31/B18B: F0 24     BEQ $B1B1          ; branch if no hit
+#+END_SRC
+
+There seems to be a counter that gets cleared:
+#+BEGIN_SRC
+; [ do reflect effect ]
+
++        E5 01     SBC #$01           ; Decrement reflect counter in A.
++        85 4B     STA $4B
+31/B9FA: 20 B5 A2  JSR $A2B5          ; get attacker flags
+31/B9FD: 30 05     BMI $BA04          ; branch if a monster
+31/B9FF: B1 70     LDA ($70),Y
+31/BA01: 30 05     BMI $BA08          ; branch if target is a monster
+31/BA03: 60        RTS                ; no reflect if attacking same side
+31/BA04: B1 70     LDA ($70),Y
+31/BA06: 30 FB     BMI $BA03          ; branch if target is a monster
+31/BA08: AD 88 7E  LDA $7E88          ; spell id
+31/BA0B: 85 18     STA $18
+31/BA0D: 20 46 FD  JSR $FD46          ; lsr3
+31/BA10: AA        TAX
+31/BA11: A5 18     LDA $18
+31/BA13: 29 07     AND #$07
+31/BA15: A8        TAY
+31/BA16: C8        INY
+31/BA17: BD 0E BB  LDA $BB0E,X        ; spell reflectability
+31/BA1A: 0A        ASL
+31/BA1B: 88        DEY
+31/BA1C: D0 FC     BNE $BA1A
+31/BA1E: 90 7B     BCC $BA9B          ; return if not reflectable
+31/BA20: A5 70     LDA $70
+31/BA22: 8D B5 78  STA $78B5          ; set reflected target pointer
+31/BA25: A5 71     LDA $71
+31/BA27: 8D B6 78  STA $78B6
+31/BA2A: 20 25 BC  JSR $BC25          ; get target flags
+31/BA2D: 48        PHA
+31/BA2E: 29 07     AND #$07
+31/BA30: AA        TAX
+31/BA31: AD B8 7E  LDA $7EB8          ; set reflected target
+31/BA34: 20 20 FD  JSR $FD20          ; set bit
+31/BA37: 8D B8 7E  STA $7EB8
+- 31/BA3A: A0 26     LDY #$26
+- 31/BA3C: A9 00     LDA #$00
++          A5 4B     LDA $4B
+31/BA3E: 91 70     STA ($70),Y        ; clear reflect counter -- Instead of clearing, we want to decrement.
+31/BA40: 85 24     STA $24
+31/BA42: 85 27     STA $27
+31/BA44: A9 03     LDA #$03
+31/BA46: 85 25     STA $25
+...
+#+END_SRC
+
+It is possible to give Wall multiple charges and decrement the counter instead...
 
 *** Improve Steal Rate
 
