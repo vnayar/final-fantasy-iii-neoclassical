@@ -949,46 +949,78 @@ Reflect is used during the normal magic effect (only usage):
 31/B18B: F0 24     BEQ $B1B1          ; branch if no hit
 #+END_SRC
 
-There seems to be a counter that gets cleared:
+There seems to be a counter that gets cleared.
+It is possible to give Wall multiple charges and decrement the counter instead...
+
 #+BEGIN_SRC
 ; [ do reflect effect ]
-
-+        E5 01     SBC #$01           ; Decrement reflect counter in A.
-+        85 4B     STA $4B
-31/B9FA: 20 B5 A2  JSR $A2B5          ; get attacker flags
-31/B9FD: 30 05     BMI $BA04          ; branch if a monster
-31/B9FF: B1 70     LDA ($70),Y
-31/BA01: 30 05     BMI $BA08          ; branch if target is a monster
-31/BA03: 60        RTS                ; no reflect if attacking same side
-31/BA04: B1 70     LDA ($70),Y
-31/BA06: 30 FB     BMI $BA03          ; branch if target is a monster
-31/BA08: AD 88 7E  LDA $7E88          ; spell id
-31/BA0B: 85 18     STA $18
-31/BA0D: 20 46 FD  JSR $FD46          ; lsr3
-31/BA10: AA        TAX
-31/BA11: A5 18     LDA $18
-31/BA13: 29 07     AND #$07
-31/BA15: A8        TAY
-31/BA16: C8        INY
-31/BA17: BD 0E BB  LDA $BB0E,X        ; spell reflectability
-31/BA1A: 0A        ASL
-31/BA1B: 88        DEY
-31/BA1C: D0 FC     BNE $BA1A
-31/BA1E: 90 7B     BCC $BA9B          ; return if not reflectable
-31/BA20: A5 70     LDA $70
-31/BA22: 8D B5 78  STA $78B5          ; set reflected target pointer
-31/BA25: A5 71     LDA $71
-31/BA27: 8D B6 78  STA $78B6
-31/BA2A: 20 25 BC  JSR $BC25          ; get target flags
-31/BA2D: 48        PHA
-31/BA2E: 29 07     AND #$07
-31/BA30: AA        TAX
-31/BA31: AD B8 7E  LDA $7EB8          ; set reflected target
-31/BA34: 20 20 FD  JSR $FD20          ; set bit
-31/BA37: 8D B8 7E  STA $7EB8
+; Offset: $63a0a
++ 31/B9FA: E5 01     SBC #$01           ; Decrement reflect counter in A.
++ 31/B9FC: 85 17     STA $17            ; Hopefully $17 is unused.
+- 31/B9FA: 20 B5 A2  JSR $A2B5          ; get attacker flags
++ 31/B9FE: 20 B5 A2  JSR $A2B5          ; get attacker flags
+- 31/B9FD: 30 05     BMI $BA04          ; branch if a monster
++ 31/BA01: 30 05     BMI $BA08          ; branch if a monster
+- 31/B9FF: B1 70     LDA ($70),Y
++ 31/BA03: B1 70     LDA ($70),Y
+- 31/BA01: 30 05     BMI $BA08          ; branch if target is a monster
++ 31/BA05: 30 05     BMI $BA0C          ; branch if target is a monster
+- 31/BA03: 60        RTS                ; no reflect if attacking same side
++ 31/BA07: 60        RTS                ; no reflect if attacking same side
+- 31/BA04: B1 70     LDA ($70),Y
++ 31/BA08: B1 70     LDA ($70),Y
+- 31/BA06: 30 FB     BMI $BA03          ; branch if target is a monster
++ 31/BA0A: 30 FB     BMI $BA07          ; branch if target is a monster
+- 31/BA08: AD 88 7E  LDA $7E88          ; spell id
++ 31/BA0C: AD 88 7E  LDA $7E88          ; spell id
+- 31/BA0B: 85 18     STA $18
++ 31/BA0F: 85 18     STA $18
+- 31/BA0D: 20 46 FD  JSR $FD46          ; lsr3
++ 31/BA11: 20 46 FD  JSR $FD46          ; lsr3
+- 31/BA10: AA        TAX
++ 31/BA14: AA        TAX
+- 31/BA11: A5 18     LDA $18
++ 31/BA15: A5 18     LDA $18
+- 31/BA13: 29 07     AND #$07
++ 31/BA17: 29 07     AND #$07
+- 31/BA15: A8        TAY
++ 31/BA19: A8        TAY
+- 31/BA16: C8        INY                ; INY then DEY?? What's the point?
+- 31/BA17: BD 0E BB  LDA $BB0E,X        ; spell reflectability
++ 31/BA1A: BD 0E BB  LDA $BB0E,X        ; spell reflectability
+- 31/BA1A: 0A        ASL
++ 31/BA1D: 0A        ASL
+- 31/BA1B: 88        DEY                ; Not needed, reverses 31/BA16
+- 31/BA1C: D0 FC     BNE $BA1A
++ 31/BA1E: D0 FC     BNE $BA1D
+- 31/BA1E: 90 7B     BCC $BA9B          ; return if not reflectable
++ 31/BA20: 90 7B     BCC $BA9B          ; return if not reflectable
+- 31/BA20: A5 70     LDA $70
++ 31/BA22: A5 70     LDA $70
+- 31/BA22: 8D B5 78  STA $78B5          ; set reflected target pointer
++ 31/BA24: 8D B5 78  STA $78B5          ; set reflected target pointer
+- 31/BA25: A5 71     LDA $71
++ 31/BA27: A5 71     LDA $71
+- 31/BA27: 8D B6 78  STA $78B6
++ 31/BA29: 8D B6 78  STA $78B6
+- 31/BA2A: 20 25 BC  JSR $BC25          ; get target flags
++ 31/BA2C: 20 25 BC  JSR $BC25          ; get target flags
+- 31/BA2D: 48        PHA
++ 31/BA2F: 48        PHA
+- 31/BA2E: 29 07     AND #$07
++ 31/BA30: 29 07     AND #$07
+- 31/BA30: AA        TAX
++ 31/BA32: AA        TAX
+- 31/BA31: AD B8 7E  LDA $7EB8          ; set reflected target
++ 31/BA33: AD B8 7E  LDA $7EB8          ; set reflected target
+- 31/BA34: 20 20 FD  JSR $FD20          ; set bit
++ 31/BA36: 20 20 FD  JSR $FD20          ; set bit
+- 31/BA37: 8D B8 7E  STA $7EB8
++ 31/BA39: 8D B8 7E  STA $7EB8
 - 31/BA3A: A0 26     LDY #$26
-- 31/BA3C: A9 00     LDA #$00
-+          A5 4B     LDA $4B
+- 31/BA3C: A9 00     LDA #$00         ;  -- Save 2 bytes
+; Offset: $63a4c
++ 31/BA3C: A5 17     LDA $17          ; Retrieve our temporary value.
 31/BA3E: 91 70     STA ($70),Y        ; clear reflect counter -- Instead of clearing, we want to decrement.
 31/BA40: 85 24     STA $24
 31/BA42: 85 27     STA $27
@@ -996,8 +1028,22 @@ There seems to be a counter that gets cleared:
 31/BA46: 85 25     STA $25
 ...
 #+END_SRC
+Doesn't work, the INY and DEY choose the enemy and find a slot, otherwise you get an infinite loop.
 
-It is possible to give Wall multiple charges and decrement the counter instead...
+Once a solution to the above is found, increase the number of charges in Wall from 1 to 3.
+#+BEGIN_SRC
+; "リフレク" / "Wall"
+; Offset: $6349c
+31/B48C: 20 21 B9  JSR $B921          ; check if attack was effective
+31/B48F: F0 09     BEQ $B49A
+31/B491: A0 26     LDY #$26
+31/B493: B1 70     LDA ($70),Y
+31/B495: 18        CLC
+- 31/B496: 69 01     ADC #$01           ; increment reflect counter
++ 31/B496: 69 03     ADC #$03           ; Add 3 reflect charges
+31/B498: 91 70     STA ($70),Y
+31/B49A: 60        RTS
+#+END_SRC
 
 *** Improve Steal Rate
 
