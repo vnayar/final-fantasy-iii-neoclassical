@@ -1097,10 +1097,13 @@ New:                                      36
 - $60b80 Flame Devil - Source of "God's Wine", Group 34
 Old: 3e22 065a 3508 11dd 108c 0010 3021 0000
 New:                                      34
-- $60b90 QumQum - Source of "ChocoRage", Group 35
-Old: 3e22 065a 3508 11dd 108c 0010 3021 0000
+- $60ba0 QumQum - Source of "ChocoRage", Group 35
+Old: 3e2a 0850 0000 21ee 00a8 0500 3100 2a00
 New:                                      35
 - $60630 Magician - Existing source of TurtleShell, group 2B.
+- $60b90 Platinal - Add to group 2B
+Old: 3ee4 111a 4000 11c9 008d 0000 3700 2b00
+New:                                      2B
 - $60ab0 Thanatos - Add to group 2B
 Old: 3998 0815 2000 10b8 0086 0000 2200 2b00
 New:                                      2B
