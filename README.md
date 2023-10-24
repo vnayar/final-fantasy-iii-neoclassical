@@ -885,7 +885,9 @@ following ways:
   - Erase can remove elemental resistance from bosses, as long as you land at least 4 hits.
   - The color of the spell has been changed to indicate it is NOT related to Wall. Erase removes
     elemental resistances that halve incoming magic damage, it is not involved in spell reflection.
-- Wall has been given a brighter grey color, making it visually distinct from Erase to avoid confusion.
+- Wall has been been modified:
+  - Color changed to a brighter grey, making it visually distinct from Erase to avoid confusion.
+  - Wall now reflects up to 3 spells (making it a viable alternative to Cure4).
 - Cure4 no longer heals HP to max (the bytes were needed to add spi/2 to healing). However, in
   compensation, it has more spellpower than before. It is slightly weaker on a single target, but
   more powerful when used on the entire party.
