@@ -1086,7 +1086,6 @@ Enemy Data: Offset: $60010
 - $E: Special attack index
 - $F: Steal/Drop index
 
-
 - $609e0 Ion - Source of "Earthdrum", Group 36
 Old: 35b0 041e 0000 0e44 0080 0000 1f00 0400
 New:                                      36
@@ -1111,22 +1110,86 @@ Old: 2edc 0563 2500 9d75 0080 00fe 2f20 1500
 New:                                      37
 - $60180 Unne Cln. - Source of "Fenix Down", Group 37
 Old: 1edc 0563 2000 9d57 0080 00fe 2f20 1600
-Old:                                      37
+New:                                      37
+- Vassago - Splitting enemy, Group 38+ (58)
+- $60930 Balfrey - Splitting enemy, green dude with snake hand. Group 38+ (58)
+Old: 3154 0600 0002 2000 007b 00fd 1d00 1000
+New:                                      58
+- $60920 Chronos - Splitting enemey, green lizard man w/ sword. Group 38+ (58)
+Old: 310e 0600 0002 2099 007b 00fd 1d00 1000
+New:                                      58
+- $60940 Haniel - Splitting enemy, green wormy thing. Group 40
+Old: 3240 0600 1002 2000 007c 00fd 1d00 1000
+New:                                      3A
+- $60a00 Ouroboros - Red naga in Leviathan cave. Group 40
+Old: 363e 0300 0004 0f00 00a7 0200 1f00 0000
+New:                                      3A
+- $60850 Killer Snail - Snailman with green skin. Group 39
+Old: 2d30 0200 0004 0d00 0074 0000 1a00 0000
+New:                                      39
+- $60860 Olog-Hai - Blue crab-man. Group 39
+Old: 373a 0200 0000 0d00 0075 0000 1a00 0000
+New:                                      39
+- $60a10 Planctae - Red crab-man. Group 39.
+Old: 3648 0328 0004 0f00 0081 0000 2000 0800
+New:                                      39
+- $60a80 Queen Lamia - Lamia lady in Bahamut cave.
+Old: 3800 055a 0001 0f8a 80a8 4100 2100 0900
+New:                                      3B
+- $60a40 Grenade - Turquise bomb in Bahamut cave. Group 3C+ (5C)
+Old: 3766 0332 0000 0f00 0082 0000 2000 0700
+New:                                      5C
+- $60db0 Ninja - Blue ninja in Eureka. Group 34
+Old: 3c7c 150f 2000 9d00 0095 00fe 3900 2000
+New:                                      34
+- $60b20 Haokah - Blue lizard-man with snake arm. Group 58.
+Old: 3cf2 0346 3000 1066 0489 0004 2321 0200
+New:                                      58
+- $60b40 Oceanos - Green thick snake with arms. Group 39.
+Old: 3c06 0400 1000 1100 008a 0000 2300 0000
+New:                                      39
+- $60bc0 Leader - Ninja lady in dark crystal area. Group 3B.
+Old: 3f3e 0814 3200 1500 008e 00fe 3500 2600
+New:                                      3B
+- $60bd0 Kage - Purple ninja in dark crystal area. Group 40.
+Old: 3f3e 0814 3200 1500 008e 00fe 3500 2600
+New:                                      40
+- $60c60 Q.Scylla - Big green multi-headed dog-wizard. Group 37.
+Old: 424c 1800 0000 1200 0093 0000 3300 0000
+New:                                      37
+- $60c70 Garm - Brown cerebus that casts drain in dark crystal area. Group 3B.
+Old: 4390 1028 3000 1200 00a8 2100 3400 2400
+New:                                      3B
 
-Steal/Drop Indexes
-- Group 34: Offset:$21C30-$21C33
+Steal/Drop Indexes (add $20 to group to enable 2nd half)
+- Group 34: Offset: $21C30-$21C33
   Old: 00 00 00 00
   New: A7 A7 B9 B9 - High Potion (A7), God's Wine (B9)
-- Group 35: Offset:$21C38-$21C3B
+- Group 35: Offset: $21C38-$21C3B
   Old: 00 00 00 00
   New: A7 A7 C6 C6 - High Potion (A7), ChocoRage (C6)
-- Group 36: Offset:$21C40-$21C43
+- Group 36: Offset: $21C40-$21C43
   Old: 00 00 00 00
   New: A7 A7 B7 B7 - High Potion (A7), Earthdrum (B7)
-- Group 37: Offset:$21C48-$21C4B
+- Group 37: Offset: $21C48-$21C4B
   Old: 00 00 00 00
   New: A7 A7 A9 A9 - High Potion (A7), Fenixdown (A9)
-
+- Group 38 (58): Offset: $21C50-$21C57 - Big grab-bag of useful stuff.
+  Old: 00 00 00 00 00 00 00 00
+  New: A7 C3 B5 B6 C0 C2 BC C1
+  HiPotion, Pillow, NorthWind, God's Rage, SplitShell, Mutecharm, Blackhole, Paralyzer
+- Group 39: Offset: $21C58-$21C5B
+  Old: 00 00 00 00
+  New: C0 BA BA BA - TurtlShell(BA), SplitShell(C0)
+- Group 3A: Offset: $21C60-$21C67
+  Old: 00 00 00 00 00 00 00 00
+  New: C2 C5 BC C1 - MuteCharm(C2), Barrier(C5), Blackhole(BC), Paralyzer(C1)
+- Group 3B: Offset: $21C68-$21C6F
+  Old: 00 00 00 00 00 00 00 00
+  New: B8 BE C2 C5 - LamiaScl.(B8), LilithKiss(BE), Mutecharm(C2), Barrier(C5)
+- Group 3C: Offset: $21C70-$21C77 - Bombs and explody guys.
+  Old: 00 00 00 00 00 00 00 00
+  New: A7 A7 B4 C4 C6 - HighPotion(A7), Bombrarm(B4), BombHead(C4), ChocoRage(C6)+
 Success!
 
 *** Some Geomancer Spells Poorly Balanced

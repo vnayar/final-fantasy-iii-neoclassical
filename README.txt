@@ -395,6 +395,9 @@ Command Changes:
 - Fight: Right-hand weapon now receives str/2 instead of str/4 damage.
 - Steal: Success chance changed from (level+skill)/255 % to (level+skill)/200 %.
   - Enemies found in the crystal tower carry valuable items.
+  - TurtleShells? Underwater hidden cave. LilithKiss? Try lilith enemies.
+  - The earth fang cave has lots of useful items.
+  - Dorga and Unne clones have precious Fenix Downs.
 - Escape: Defense/Evasion no longer set to 0.
 - Item: Int contributes more strongly to offensive items, e.g. NorthWind. Spi now contributes to
   potions.
