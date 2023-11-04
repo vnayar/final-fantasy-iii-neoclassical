@@ -72,6 +72,10 @@ The changes are numerous, but a brief summary may be found below:
     distinct.
   - Lower tier jobs gain access to equipment throughout the game, keeping them viable.
   - Abilities that had questionable value were reworked, including Scare, Buildup, and Jump.
+  - Steal has been completely re-written:
+    - New thieves still have a reasonable chance to steal.
+    - Most monsters have more interesting loot.
+    - High thief skill allows one to steal rarer items.
 
 ## Melee Damage Formula Changes
 
@@ -393,11 +397,19 @@ Equipment Changes:
 
 Command Changes:
 - Fight: Right-hand weapon now receives str/2 instead of str/4 damage.
-- Steal: Success chance changed from (level+skill)/255 % to (level+skill)/200 %.
-  - Enemies found in the crystal tower carry valuable items.
-  - TurtleShells? Underwater hidden cave. LilithKiss? Try lilith enemies.
-  - The earth fang cave has lots of useful items.
-  - Dorga and Unne clones have precious Fenix Downs.
+- Steal: (Original)
+  - Can only steal first 4 item slots (out of 8) of enemy drop/steal table.
+  - Success chance is (level+skill)/255 %
+- Steal: (Neoclassical)
+  - Item slots that can be stolen are from 0 to 255/(56-skill/4). At low skill,
+    it's the first 4 item slots, and at high skill, it's all 8 item slots.
+  - Success chance is (50 + level + skill)/255 %.
+  - Most enemies have enemies have more varied loot.
+  - Certain enemies are sources of very useful items. Try the following locations:
+    - Crystal Tower
+    - Underwater Hidden Cave
+    - Earth Fang Cave
+    - Bahamut's Cave
 - Escape: Defense/Evasion no longer set to 0.
 - Item: Int contributes more strongly to offensive items, e.g. NorthWind. Spi now contributes to
   potions.
@@ -523,6 +535,13 @@ Command Changes:
   potions.
 
 ### Karateka / BlackBelt
+
+Unlike the Monk, the Karateka is focused on combat and defeating his foe. His strength, endurance,
+and agility are unmatched by any other as his body is honed by training. While he is trained in the
+use of claws, with training, he becomes even more proficient with his bare fists. When facing an
+especially challenging opponent, he can take a moment to focus his energy into a fist (or two fists
+if he focuses further), and unleash devestating blows that can penetrate even the strongest
+defense. This strategy is risky, however, because the Karateka must lower his own defenses to focus.
 
 Attributes (Original):
 - Level  1: Str=23, Agi=10, Vit=20, Int= 1, Spi= 1

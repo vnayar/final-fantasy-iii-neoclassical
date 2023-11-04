@@ -1086,6 +1086,160 @@ Enemy Data: Offset: $60010
 - $E: Special attack index
 - $F: Steal/Drop index
 
+The interpretation of $F, the Steal/Drop index, is completely incorrect at:
+https://datacrystal.romhacking.net/wiki/Final_Fantasy_III:ROM_map#Monsters
+
+In reality, $F is of the format:  pppi iiii
+- ppp: the bits indicating the drop probability out of 6.  E.g. 101 means 5/6.
+- iiiii: the bits indicating the steal/drop index
+
+The Steal algorithm can ONLY grab the first 4 items in a steal/drop index:
+https://github.com/everything8215/ff3/blob/1acef8117120ff891003de249b1a74bc8d94d674/ff3j.asm#L27159C52-L27159C52
+
+The probabilities per item slot are:
+- Slot 0: 48/256
+- Slot 1: 48/256
+- Slot 2: 48/256
+- Slot 3: 112/256
+
+Thus, Slot 3 is much more probable than the other slots.
+
+After the battle ends, a different set of logic is used to select which items may drop: $6bc8e
+https://github.com/everything8215/ff3/blob/1acef8117120ff891003de249b1a74bc8d94d674/ff3j.asm#L29329C1-L29329C1
+
+
+With probability ppp/7, an item will drop from a monster. When it does occur, items will drop with
+the following probabilities:
+- Slot 0: 48/256
+- Slot 1: 48/256
+- Slot 2: 48/256
+- Slot 3: 48/256
+- Slot 4: 24/256
+- Slot 5: 24/256
+- Slot 6: 12/256
+- Slot 7:  4/256
+
+Putting this data together, we have the following slot behavior:
+- Slot 0:  Drop%=48/256, Steal%=48/256
+- Slot 1:  Drop%=48/256, Steal%=48/256
+- Slot 2:  Drop%=48/256, Steal%=48/256
+- Slot 3:  Drop%=48/256, Steal%=112/256
+- Slot 0:  Drop%=24/256
+- Slot 1:  Drop%=24/256
+- Slot 2:  Drop%=12/256
+- Slot 3:  Drop%= 4/256
+
+Does this mean that a Goblin with a Steal/Drop index of $20 can drop an Elixir?
+
+Yes... With a true random number generator, it would be (1/7)*(4/256) = 0.0023% (1 in 435).
+In practice, the random number generator skews heavily against generating 0 and high values.
+The real probability is probably closer to 0.0005% (1 in 2000).
+
+**** Steal/Drop Indexes
+
+This is a 5-bit value ranging from $00 to $1F.
+
+- Index $00: $21b90
+  Old: a6a6 a6a6 a7a7 a9a8 - Potion(A6), HiPotion(A7), FenixDown(A9), Elixir(A8)
+  New: a6a6 a6a6 a7a7 a7a9 - Potion(A6), HiPotion(A7), FenixDown(A9)
+- Index $01: $21b98
+  a6b1 b1c3 b0b8 b4b4 - Potion(A6), Bombshard(B1), Pillow(C3), Otterhead(B0), BombrArm(B4)
+- Index $02: $21ba0
+  a6b2 b2a4 b0b9 b5b5 - Potion(A6), Southwind(B2), MidgBread(A4), Otterhead(B0), God's Wine(B9), Northwind(B5)
+- Index $03: $21ba8
+  a6b3 b3bb b0c0 b6b6 - Potion(A6), ZeusRage(B3), DevilSigh(BB), Otterhead(B0), SplitShell(C0), GodsRage(B6)
+- Index $04: $21bb0
+  b1b2 b3a6 c2c1 bbbb - Bombshard(B1), Southwind(B2), ZeusRage(B3), Potion(A6), Mutecharm(C2), Paralyzer(C1), DevilSigh(BB)
+- Index $05: $21bb8
+  4f50 5152 5354 5556 - WoodenArw(4F), HolyArw(50), IronArw(51), LightArw(52), FireArw(53), IceArw(54), MedusaArw(55), YoichiArw(56)
+- Index $06: $21bc0
+  aaaa aaaa aaaa aaaa - Soft(AA)
+- Index $07: $21bc8
+  aeae afaf aeae afaf - Eyedrop(AE), Antidote(AF)
+- Index $08: $21bd0
+  a6ab acad abac ada7 - Potion(A6), MaidKiss(AB), EchoHerb(AC), LuckMallet(AD), HiPotion(A7)
+- Index $09: $21bd8
+  a7a7 a7a7 a9a9 a8a8 - HiPotion(A7), FenixDown(A9), Elixir(A8)
+- Index $0A: $21be0
+  a7b4 b4c1 b0c2 bebe - HiPotion(A7), BombrArm(B4), Paralyzer(C1), Otterhead(B0), MuteCharm(C2), LilithKiss(BE)
+- Index $0B: $21be8
+  a7b5 b5ba b0bc bfbf - HiPotion(A7), NorthWind(B5), TurtleShell(BA), Otterhead(B0), BlackHole(BC), ImpYawn(BF)
+- Index $0C: $21bf0
+  a7b6 b6c1 b0c5 c6bd - HiPotion(A7), GodsRage(B6), Paralyzer(C1), Otterhead(B0), Barrier(C5), Chocorage(C6), DarkScent(BD)
+- Index $0D: $21bf8
+  b4b5 b6a6 b8b9 bab7 - BombrArm(B4), Northwind(B5), GodsRage(B6), Potion(A6), LamiaScl(B8), GodsWine(B9), Turtleshell(BA), Earthdrum(B7)
+- Index $0E: $21c00
+  a7bc bebf c5c0 bdc6 - HiPotion(A7), BlackHole(BC), LilithKiss(BE), ImpsYawn(BF), Barrier(C5), Splitshell(C0), DarkScent(BD), ChocoRage(C6)
+- Index $0F: $21c08
+  empty
+- Index $10: $21c10
+  empty
+- Index $11: $21c18
+  empty
+- Index $12: $21c20
+  empty
+- Index $13: $21c28  (for bosses)
+  Old: 0000 0000 0000 0000
+  New: A7A7 A7A9 A9A9 A8A8 HiPotion(A7), FenixDown(A9), Elixir(A8)
+- Index $14: $21c30  (new)
+  Old: 0000 0000 0000 0000
+  New: A7A7 B9B9 C4C4 A9A8 - High Potion (A7), God's Wine (B9), BombHead(C4), FeinxDown(A9), Elixir(A8)
+- Index $15: $21c38
+  Old: 0000 0000 0000 0000
+  New: A7A7 C6C6 C7C7 A9A8 - High Potion (A7), ChocoRage (C6), WhiteScent(C7), FeinxDown(A9), Elixir(A8)
+- Index $16: $21c40
+  Old: 0000 0000 0000 0000
+  New: A7A7 A7A7 B7B7 B7B7- High Potion (A7), Earthdrum (B7)
+- Index $17: $21c48
+  Old: 0000 0000 0000 0000
+  New: A7A7 A7A7 A9A9 A9A9 - High Potion (A7), Fenixdown (A9)
+- Index $18: $21c50 - Big grab-bag of useful stuff.
+  Old: 00 00 00 00 00 00 00 00
+  New: A7 C3 B5 B6 C0 C2 BC C1
+  HiPotion, Pillow, NorthWind, God's Rage, SplitShell, Mutecharm, Blackhole, Paralyzer
+- Index $19: $21c58
+  Old: 0000 0000 0000 0000
+  New: A6A7 A7BA BABA C0C0 - TurtlShell(BA), SplitShell(C0)
+- Index $1A: $21c60
+  Old: 0000 0000 0000 0000
+  New: A7A7 C2C2 C5C5 C1BC - MuteCharm(C2), Barrier(C5), Blackhole(BC), Paralyzer(C1)
+- Index $1B: $21c68 - For succubi and similar creatures.
+  Old: 0000 0000 0000 0000
+  New: B8B8 BEBE C2C2 C5C5 - LamiaScl.(B8), LilithKiss(BE), Mutecharm(C2), Barrier(C5)
+- Index $1C: $21c70 - Bombs and explody guys.
+  Old: 0000 0000 0000 0000
+  New: A7A7 B4B4 C4C4 C6C6 - HighPotion(A7), Bombrarm(B4), BombHead(C4), ChocoRage(C6)+
+- Index $1D: $21c78
+  a8a8 a8a8 3939 3959 - Elixir(A8), OnionSword(39), OnionShield(59)
+- Index $1E: $21c80
+  a8a8 a8a8 5963 7439 - Elixir(A8), OnionShield(59), OnionHelm(63), OnionArmor(74), OnionSword(39)
+- Index $1F: $21c88
+  a8a8 a8a8 8c74 6339 - Elixir(A8), OnionGloves(8C), OnionArmor(74), OnionHelm(63), OnionSword(39)
+Success!
+
+**** Monster Data Drop Indexes
+
+Generic Monster Drop Indexes
+- Make use of the existing, but unused, drop indexes. Find monsters by level, and give them an
+  appropriate previousle existing index.
+- Monster Data starts at $60010
+
+Boss Monster Indexes: Use Group 13 with non-zero probability, e.g. (low) $33, $53, $73, $93, $B3, $E3 (high)
+- $607d0 Dragon => $53
+- $60c80 Double Dragon => $B3
+- $60cf0 Big Rat => $53
+- $60d00 Medusa => $73
+- $60d10 Guzco => $73
+- $60d20 Salamander => $73
+- $60d30 Hyne => $73
+- $60d40 Kraken => $73
+- $60d50 Goldor => $73
+- $60d60 Garuda => $73
+- $60c40 Hekaton => $93
+- $60da0 Titan => $93
+
+Special Attention Monster Drop Indexes
+
 - $609e0 Ion - Source of "Earthdrum", Group 36
 Old: 35b0 041e 0000 0e44 0080 0000 1f00 0400
 New:                                      36
@@ -1104,17 +1258,17 @@ Old: 3998 0815 2000 10b8 0086 0000 2200 2b00
 New:                                      2B
 - $60c20 Jormungand - Add to group 2B
 Old: 410a 0a1e 1000 1200 0091 0000 3100 2600
-New:                                      2B
+New:                                      2B; p=1,i=0B
 - $60ae0 Dorga.Cln. - Source of "Fenix Down", Group 37
 Old: 2edc 0563 2500 9d75 0080 00fe 2f20 1500
-New:                                      37
+New:                                      37; p=1,i=17
 - $60180 Unne Cln. - Source of "Fenix Down", Group 37
 Old: 1edc 0563 2000 9d57 0080 00fe 2f20 1600
-New:                                      37
+New:                                      37; p=1,i=17
 - Vassago - Splitting enemy, Group 38+ (58)
 - $60930 Balfrey - Splitting enemy, green dude with snake hand. Group 38+ (58)
 Old: 3154 0600 0002 2000 007b 00fd 1d00 1000
-New:                                      58
+New:                                      58; p=2,i=18
 - $60920 Chronos - Splitting enemey, green lizard man w/ sword. Group 38+ (58)
 Old: 310e 0600 0002 2099 007b 00fd 1d00 1000
 New:                                      58
@@ -1138,13 +1292,13 @@ Old: 3800 055a 0001 0f8a 80a8 4100 2100 0900
 New:                                      3B
 - $60a40 Grenade - Turquise bomb in Bahamut cave. Group 3C+ (5C)
 Old: 3766 0332 0000 0f00 0082 0000 2000 0700
-New:                                      5C
+New:                                      5C; p=2,i=1C
 - $60db0 Ninja - Blue ninja in Eureka. Group 34
 Old: 3c7c 150f 2000 9d00 0095 00fe 3900 2000
 New:                                      34
 - $60b20 Haokah - Blue lizard-man with snake arm. Group 58.
 Old: 3cf2 0346 3000 1066 0489 0004 2321 0200
-New:                                      58
+New:                                      58; p=2,i=18
 - $60b40 Oceanos - Green thick snake with arms. Group 39.
 Old: 3c06 0400 1000 1100 008a 0000 2300 0000
 New:                                      39
@@ -1153,7 +1307,7 @@ Old: 3f3e 0814 3200 1500 008e 00fe 3500 2600
 New:                                      3B
 - $60bd0 Kage - Purple ninja in dark crystal area. Group 40.
 Old: 3f3e 0814 3200 1500 008e 00fe 3500 2600
-New:                                      40
+New:                                      40; p=2,i=00
 - $60c60 Q.Scylla - Big green multi-headed dog-wizard. Group 37.
 Old: 424c 1800 0000 1200 0093 0000 3300 0000
 New:                                      37
@@ -1161,36 +1315,127 @@ New:                                      37
 Old: 4390 1028 3000 1200 00a8 2100 3400 2400
 New:                                      3B
 
-Steal/Drop Indexes (add $20 to group to enable 2nd half)
-- Group 34: Offset: $21C30-$21C33
-  Old: 00 00 00 00
-  New: A7 A7 B9 B9 - High Potion (A7), God's Wine (B9)
-- Group 35: Offset: $21C38-$21C3B
-  Old: 00 00 00 00
-  New: A7 A7 C6 C6 - High Potion (A7), ChocoRage (C6)
-- Group 36: Offset: $21C40-$21C43
-  Old: 00 00 00 00
-  New: A7 A7 B7 B7 - High Potion (A7), Earthdrum (B7)
-- Group 37: Offset: $21C48-$21C4B
-  Old: 00 00 00 00
-  New: A7 A7 A9 A9 - High Potion (A7), Fenixdown (A9)
-- Group 38 (58): Offset: $21C50-$21C57 - Big grab-bag of useful stuff.
-  Old: 00 00 00 00 00 00 00 00
-  New: A7 C3 B5 B6 C0 C2 BC C1
-  HiPotion, Pillow, NorthWind, God's Rage, SplitShell, Mutecharm, Blackhole, Paralyzer
-- Group 39: Offset: $21C58-$21C5B
-  Old: 00 00 00 00
-  New: C0 BA BA BA - TurtlShell(BA), SplitShell(C0)
-- Group 3A: Offset: $21C60-$21C67
-  Old: 00 00 00 00 00 00 00 00
-  New: C2 C5 BC C1 - MuteCharm(C2), Barrier(C5), Blackhole(BC), Paralyzer(C1)
-- Group 3B: Offset: $21C68-$21C6F
-  Old: 00 00 00 00 00 00 00 00
-  New: B8 BE C2 C5 - LamiaScl.(B8), LilithKiss(BE), Mutecharm(C2), Barrier(C5)
-- Group 3C: Offset: $21C70-$21C77 - Bombs and explody guys.
-  Old: 00 00 00 00 00 00 00 00
-  New: A7 A7 B4 C4 C6 - HighPotion(A7), Bombrarm(B4), BombHead(C4), ChocoRage(C6)+
-Success!
+**** Steal Overhaul
+
+Several problems exist with steal:
+- Only the bitmask #$1F of the steal/drop index is used, all other bits are ignored. Thus, only the
+  first 4 items in the index may be stolen.
+- The base steal% of a new thief is extremely low, discouraging many players.
+- JobLevel only improves your chance to steal, but not the quality of items.
+
+Changes:
+- Old:
+  - Steal% = (Level + JobLevel)/255
+  - Steal Items: Item0 (48/255), Item1 (48/255), Item2 (48/255), Item3(112/255)
+- New:
+  - Steal% = (50 + Level + JobLevel)/255
+  - Steam Items: Roll 255 "Steal Points". Divide by (56-JobLevel/4). This is the stolen item slot.
+
+#+BEGIN_SRC
+; [ action $0E: steal ]
+; Offset: $6abb4
+35/ABA4: 20 66 AB  JSR $AB66
+35/ABA7: A9 47     LDA #$47           ; $062E: "ぬすむ" / "Steal"
+35/ABA9: 8D D7 78  STA $78D7
+35/ABAC: A9 01     LDA #$01           ; action script $01: magic/command
+35/ABAE: 8D D5 78  STA $78D5
+35/ABB1: A0 2C     LDY #$2C
+35/ABB3: B1 70     LDA ($70),Y
+35/ABB5: 30 08     BMI $ABBF          ; branch if target is a monster
+35/ABB7: A9 35     LDA #$35           ; $0655: "クリティカルヒット！" / "Can't steal"
+35/ABB9: 8D DA 78  STA $78DA
+35/ABBC: 4C 64 AC  JMP $AC64
+35/ABBF: 18        CLC
+35/ABC0: A0 00     LDY #$00
+35/ABC2: B1 6E     LDA ($6E),Y        ; attacker level
+35/ABC4: A0 0F     LDY #$0F
+35/ABC6: 71 6E     ADC ($6E),Y        ; attacker job level
+- 35/ABC8: 85 24     STA $24
++ 35/ABC8: 69 32     ADC #$32           ; Base 50
++ 35/ABCA: 85 24     STA $24            ; $24 = steal% = (50 + jobLevel + level)/255
++ 35/ABCC: B1 6E     LDA ($6E),Y        ; A = jobLevel = (0..98)
++ 35/ABCE: 4A 4A     LSR LSR            ; A = jobLevel/4 = (0..24)
++ 35/ABD0: 85 40     STA $40            ; $40 = The amount to subtract from the slot probability.
++ 35/ABD2: A9 38     LDA #$38           ; A = Base slot probability = 56/256
++ 35/ABD4: E5 40     SBC $40            ; A -= Reduce by skill/4 = (56..32)/256 = (#$38..#$20)/#$100
++ 35/ABD6: 85 40     STA $40            ; $40 = Item slot probability, go from slot 0 to 7 in order.
++                                       ;       Lower values mean a higher chance for later slots.
+;; This block needs to be moved.
+- 35/ABCA: A9 FF     LDA #$FF
++ 35/ABD8: A9 FF     LDA #$FF
+- 35/ABCC: 20 64 A5  JSR $A564          ; random (0..A)
++ 35/ABDA: 20 64 A5  JSR $A564          ; random (0..A)
+- 35/ABCF: C5 24     CMP $24
++ 35/ABDD: C5 24     CMP $24
+- 35/ABD1: 90 03     BCC $ABD6 (+3)    ; rate = (level + job level) / 255
++ 35/ABDF: 90 03     BCC $ABE4 (+3)    ; rate = (50 + level + jobLevel) / 255
+- 35/ABD3: 4C B7 AB  JMP $ABB7
++ 35/ABE1: 4C B7 AB  JMP $ABB7
+- 35/ABD6: A0 01     LDY #$01
++ 35/ABE4: A0 01     LDY #$01
+- 35/ABD8: B1 70     LDA ($70),Y        ; Load target status
++ 35/ABE6: B1 70     LDA ($70),Y        ; Load target status
+- 35/ABDA: 29 E8     AND #$E8
++ 35/ABE8: 29 E8     AND #$E8
+- 35/ABDC: D0 F5     BNE $ABD3          ; Can't steal if: dead, stone, toad, or mini
++ 35/ABEA: D0 F5     BNE $ABD3          ; Can't steal if: dead, stone, toad, or mini
+- 35/ABDE: A0 36     LDY #$36
++ 35/ABEC: A0 36     LDY #$36
+- 35/ABE0: B1 70     LDA ($70),Y        ; target item set
++ 35/ABEE: B1 70     LDA ($70),Y        ; target item set
+- 35/ABE2: 29 1F     AND #$1F           ; Item set in lower 5 bits. (upper 3 are drop probability)
++ 35/ABF0: 29 1F     AND #$1F           ; Item set in lower 5 bits. (upper 3 are drop probability)
+- 35/ABE4: 85 18     STA $18            ; index
++ 35/ABF2: 85 18     STA $18            ; index
+- 35/ABE6: A9 80     LDA #$80           ; 10/9B80 (monster items)
++ 35/ABF4: A9 80     LDA #$80           ; 10/9B80 (monster items)
+- 35/ABE8: 85 20     STA $20
++ 35/ABF6: 85 20     STA $20
+- 35/ABEA: A9 9B     LDA #$9B
++ 35/ABF8: A9 9B     LDA #$9B
+- 35/ABEC: 85 21     STA $21
++ 35/ABFA: 85 21     STA $21
+- 35/ABEE: A9 08     LDA #$08           ; 8 bytes
++ 35/ABFC: A9 08     LDA #$08           ; 8 bytes
+- 35/ABF0: 85 1A     STA $1A
++ 35/ABFE: 85 1A     STA $1A
+- 35/ABF2: A9 08     LDA #$08           ; unnecessary line
+- 35/ABF4: A0 1A     LDY #$1A
++ 35/AC00: A0 1A     LDY #$1A
+- 35/ABF6: A2 00     LDX #$00
++ 35/AC02: A2 00     LDX #$00
+- 35/ABF8: 20 A6 FD  JSR $FDA6          ; load array item
++ 35/AC04: 20 A6 FD  JSR $FDA6          ; load array item
+- 35/ABFB: A9 FF     LDA #$FF
++ 35/AC07: A9 FF     LDA #$FF
+- 35/ABFD: 20 64 A5  JSR $A564          ; random (0..A)
++ 35/AC09: 20 64 A5  JSR $A564          ; random (0..A)
+;; end move block
++ 35/AC0C: A2 00     LDX #$00
++ 35/AC0E: 38        SEC                ; loopStart: Set carry so it doesn't mess up subtraction.
++ 35/AC0F: E5 40     SBC $40            ; subtract our Item slot probability
++ 35/AC11: 90 07     BCC $AC1A (+7)     ; branch if A - $40 < 0 to match:
++ 35/AC13: E8        INX                ; Update vars for next item slot.
++ 35/AC14: 10 F9     BPL $AC0C (-7)     ; Jump to loopStart:
+- 35/AC00: C9 30     CMP #$30           ; 48/256: item 0
+- 35/AC02: B0 04     BCS $AC08
+- 35/AC04: A2 00     LDX #$00
+- 35/AC06: F0 12     BEQ $AC1A
+- 35/AC08: C9 60     CMP #$60           ; 48/256: item 1
+- 35/AC0A: B0 04     BCS $AC10
+- 35/AC0C: A2 01     LDX #$01
+- 35/AC0E: D0 0A     BNE $AC1A
+- 35/AC10: C9 90     CMP #$90           ; 48/256: item 2
+- 35/AC12: B0 04     BCS $AC18
+- 35/AC14: A2 02     LDX #$02
+- 35/AC16: D0 02     BNE $AC1A
+- 35/AC18: A2 03     LDX #$03           ; 112/256: item 3
++ 35/AC16: EA EA EA  NOP NOP NOP
++ 35/AC19: EA        NOP
+35/AC1A: BD 00 74  LDA $7400,X          ; :match
+35/AC1D: F0 98     BEQ $ABB7          ; branch if no item
+35/AC1F: 85 25     STA $25
+#+END_SRC
 
 *** Some Geomancer Spells Poorly Balanced
 
