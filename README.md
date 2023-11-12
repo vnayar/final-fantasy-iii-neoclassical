@@ -52,6 +52,8 @@ The changes are numerous, but a brief summary may be found below:
     multiplying 1 weapon attack after enemy defense.
   - Each job has a fixed critical strike chance and a bonus base damage for critical hits. Scholar
     and Bard have been modified to give them unique traits.
+  - Encounter rates for monsters have been rebalanced, making previously impossible to find monsters
+    like Red Dragons simply rare.
 - Major Bug Fixes
   - Buffs from Haste, Cheer, or Safe are no longer lost upon viewing or using items.
   - Elemental boost effects, such as from Ice Rod, now function and add 33% more hits.
@@ -82,12 +84,12 @@ The changes are numerous, but a brief summary may be found below:
 General Damage Formula for Weapons:
 1. Base Damage = (strength contribution) + (weapon power) + skill/4  (see formulas below)
 2. Multiply Base Damage randomly by a number in (1 to 1.5).
-3. Hit% = (weapon hit%) + agi/4 + skill/4
-4. HitMultiplier = agi/16 + level/16 + 1
+3. Hit% = (weapon hit%) + agi/4 + (skill-1)/4
+4. HitMultiplier = agi/16 + (level-1)/16 + 1
 5. For each HitMultiplier, there's a Hit% chance of landing a hit.
 6. Target Evade% = agi/4 + (sum of armor evade%)
-7. Target EvadeMultiplier (with shield) = agi/16 + level/16 + (number of shields equipped)
-8. Target EvadeMultiplier (without shield) = agi/32 + level/32
+7. Target EvadeMultiplier (with shield) = agi/16 + (level-1)/16 + (number of shields equipped)
+8. Target EvadeMultiplier (without shield) = agi/32 + (level-1)/32
 9. For each EvadeMultiplier, there's a Evade% chance of subtracting a hit.
 10. Multiply the number of landed hits by: (Base Damage) - (Target Defense)
 
@@ -115,7 +117,7 @@ General Damage Formula for magic:
 1. Base Damage = (int|spi contribution) + (spell power)
 2. Multiply Base Damage randomly by a number in (1 to 1.5).
 3. Hit% = (spell hit%) + (int|spi)/2
-4. HitMultiplier = (int|spi)/16 + level/16 + 1
+4. HitMultiplier = (int|spi)/16 + (level-1)/16 + (skill-1)/32 + 1
 5. For each HitMultiplier, there's a Hit% chance of landing a hit.
 6. Target M.Evade% = (int + spi)/2
 7. Target M.EvadeMultiplier = (agi/32) + (int + spi)/32 + 1

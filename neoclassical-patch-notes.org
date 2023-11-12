@@ -3,6 +3,43 @@ Reference: https://github.com/everything8215/ff3/
 
 ** Formulas
 
+*** Rare Monsters Impossible to Find
+
+Problem: Due to a heavily skewed random number generator, rare encounters are nearly impossible to
+find, even with multiple playthroughs, e.g. Red/Yellow/Green Dragons.
+
+Solution: Change the probability tables of rare encounters.
+
+#+BEGIN_SRC
+; Offset $7bd88
+- ; battle probabilities
+- ; 0: 12/256
+- ; 1: 12/256
+- ; 2: 12/256
+- ; 3: 12/256
+- ; 4: 6/256
+- ; 5: 6/256
+- ; 6: 3/256
+- ; 7: 1/256
+- 3D/BD78: 00 00 00 00 00 00 00 00 00 00 00 00 01 01 01 01
+- 3D/BD88: 01 01 01 01 01 01 01 01 02 02 02 02 02 02 02 02
+- 3D/BD98: 02 02 02 02 03 03 03 03 03 03 03 03 03 03 03 03
+- 3D/BDA8: 04 04 04 04 04 04 05 05 05 05 05 05 06 06 06 07
++ ; battle probabilities
++ ; 0: 10/256
++ ; 1: 10/256
++ ; 2: 10/256
++ ; 3: 10/256
++ ; 4: 8/256
++ ; 5: 8/256
++ ; 6: 4/256
++ ; 7: 4/256
++ 3D/BD78: 00 00 00 00 00 00 00 00 00 00 01 01 01 01 01 01
++ 3D/BD88: 01 01 01 01 02 02 02 02 02 02 02 02 02 02 03 03
++ 3D/BD98: 03 03 03 03 03 03 03 03 04 04 04 04 04 04 04 04
++ 3D/BDA8: 05 05 05 05 05 05 05 05 06 06 06 06 07 07 07 07
+#+END_SRC
+
 *** Fix Skill Enhancement Rate
 
 Problem: Most classes take until near the very end of the game to reach Skill 99, meaning that one
@@ -1314,6 +1351,8 @@ New:                                      37
 - $60c70 Garm - Brown cerebus that casts drain in dark crystal area. Group 3B.
 Old: 4390 1028 3000 1200 00a8 2100 3400 2400
 New:                                      3B
+- $60c90 Green Dragon
+- $60e00 Red Dragon (index $E1)
 
 **** Steal Overhaul
 
